@@ -138,7 +138,8 @@ func (ks *KSDown) StartDownload() {
 			for fp := range ks.FilePart {
 
 				// 部分下载完成时处理
-				if err := fp.startPartDownload(int64(tid)); err == nil {
+				if err := fp.startPartDownload(int64(tid)); err != nil {
+					log.Printf("下载文件失败，Err :%+v\n", err)
 				}
 
 			}
