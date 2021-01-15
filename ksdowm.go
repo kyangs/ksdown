@@ -67,8 +67,13 @@ type (
 	}
 )
 
-func NewKSDown(showPrint bool) *KSDown {
+func NewKSDown(showPrint bool) (*KSDown, error) {
 
+	if !Exists(DefaultDownPath) {
+		if err := os.MkdirAll(DefaultDownPath, os.ModePerm); err != nil {
+			return nil, err
+		}
+	}
 	return &KSDown{
 		ShowPrint: showPrint,
 		UserAgent: DefaultUserAgent,
@@ -77,7 +82,17 @@ func NewKSDown(showPrint bool) *KSDown {
 		FilePart:  make(chan *FilePart, DefaultGoroutineNum),
 		Stop:      make(chan bool),
 		Done:      make(chan *FilePart),
+	}, nil
+}
+func Exists(path string) bool {
+	_, err := os.Stat(path) //os.Stat获取文件信息
+	if err != nil {
+		if os.IsExist(err) {
+			return true
+		}
+		return false
 	}
+	return true
 }
 func HasPrefixInArray(str string, prefixList []string) string {
 	for _, prefix := range prefixList {
@@ -308,7 +323,10 @@ func main() {
 		urlList = strings.Split(url, ",")
 	}
 
-	ks := NewKSDown(true)
+	ks, err := NewKSDown(true)
+	if err != nil {
+		log.Fatalf("KSDown Step Error : %+v\n", err)
+	}
 	ks.listenClipboard()
 	ks.addTask(urlList)
 	ks.StartDownload()
