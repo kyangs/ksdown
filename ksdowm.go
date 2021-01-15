@@ -9,6 +9,7 @@ import (
 	"kdwon/utils"
 	"log"
 	"math"
+	url2 "net/url"
 	"os"
 	"os/signal"
 	"path"
@@ -148,8 +149,11 @@ func (ks *KSDown) StartDownload() {
 }
 
 func (ks *KSDown) linkInfo(downLink string) error {
-	fileName := strings.Split(path.Base(downLink), "?")[0]
-	fmt.Println(fileName)
+	fileName, err := url2.QueryUnescape(strings.Split(path.Base(downLink), "?")[0])
+	if err != nil {
+		log.Printf("url QueryUnescape err : %+v.......\n", err)
+		return err
+	}
 	log.Printf("开始获取文件[%s]信息.......\n", fileName)
 	resp, err := utils.HttpRequest(utils.HttpMethodGet, downLink, nil, map[string]string{
 		"User-Agent": DefaultUserAgent,
