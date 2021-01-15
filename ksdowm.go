@@ -162,8 +162,12 @@ func (ks *KSDown) linkInfo(downLink string) error {
 			log.Printf("Close  Response Err %+v\n", err)
 		}
 	}()
-
-	fileSize, err := strconv.Atoi(resp.Header["Content-Length"][0])
+	cl, ok := resp.Header["Content-Length"]
+	if !ok {
+		log.Printf("get Header Attr Content-Length Err %+v\n", err)
+		return err
+	}
+	fileSize, err := strconv.Atoi(cl[0])
 	if err != nil {
 		log.Printf("获取文件 [%s]  Content-Length 头部属性 失败 %+v\n", fileName, err)
 		return err
