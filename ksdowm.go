@@ -148,7 +148,8 @@ func (ks *KSDown) StartDownload() {
 }
 
 func (ks *KSDown) linkInfo(downLink string) error {
-	fileName := path.Base(downLink)
+	fileName := strings.Split(path.Base(downLink), "?")[0]
+	fmt.Println(fileName)
 	log.Printf("开始获取文件[%s]信息.......\n", fileName)
 	resp, err := utils.HttpRequest(utils.HttpMethodGet, downLink, nil, map[string]string{
 		"User-Agent": DefaultUserAgent,
